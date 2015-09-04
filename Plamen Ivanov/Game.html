@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="jquery-2.1.4.min.js"></script>
+    <script src="GameLogic.js"></script>
+    <link rel="stylesheet" type="text/css" href="GameStyle.css">
+</head>
+<body>
+<canvas id="stage" width="200" height="200">Sorry, your browser needs to support canvas for this game.</canvas>
+<button id="rules">Правила на играта.</button>
+<div id="wordToGuessContainer">
+
+
+    <h4>Choose category</h4>
+
+    <select id="sel">
+        <option value="films">Movies</option>
+        <option value="towns">Towns</option>
+        <option value="sT">Soccer Teams</option>
+        <option value="animals">Animals</option>
+    </select>
+
+    <button id="sub">I'm Ready !</button>
+
+
+</div>
+
+<br>
+
+<div id="wrongInput">Incorrect guesses:</div>
+
+<p id="dumata"></p>
+<canvas id="canv" width="530" height="400" style="border: 1px solid cadetblue"></canvas>
+<div id="container"></div>
+
+<p id="word"></p>
+
+<div id="letters"></div>
+</body>
+</html>

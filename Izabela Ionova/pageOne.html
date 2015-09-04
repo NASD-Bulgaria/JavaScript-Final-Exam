@@ -1,0 +1,81 @@
+<html>
+<head>
+	<style>
+		body{
+			background-color:#CC9E5A;
+		}
+		#header{
+			font-family:"Comic Sans MS";
+			color:#663D00;
+			margin-left: 40%;
+		}
+		img{
+			margin-left: 33%;
+		}
+	</style>
+</head>
+<body>
+<h1 id="header">Hangman</h1>
+<input id="theWord" type="password"/>
+<button id="btn">Submit</button>
+
+<p id="results"></p>
+<img src="rope.png"/>
+<script>
+
+function loadDataFromSessionStorage(){
+	if(sessionStorage.getItem("playerOneScores") === null){
+		playerOneScores = 0;
+		sessionStorage.setItem("playerOneScores", playerOneScores);
+	}
+	else
+	{
+		playerOneScores = sessionStorage.getItem("playerOneScores");
+	}
+
+	if(sessionStorage.getItem("playerTwoScores") === null){
+		playerTwoScores = 0;
+		sessionStorage.setItem("playerTwoScores", playerTwoScores);
+	}
+	else
+	{
+		playerTwoScores = sessionStorage.getItem("playerTwoScores");
+	}
+
+	if(sessionStorage.getItem("level") === null){
+		level = 1;
+		sessionStorage.setItem("level", level);
+	}
+	else
+	{
+		level = sessionStorage.getItem("level");
+		if(playerOneScores >1){
+			alert("player one wins");
+			level = 1;	
+			playerOneScores = 0;
+			playerTwoScores = 0;
+		}
+		else if(playerTwoScores>1){
+			alert("player two wins");
+			level = 1;
+			playerOneScores = 0;
+			playerTwoScores = 0;
+		}
+	}
+}
+
+loadDataFromSessionStorage();
+
+var btn = document.getElementById("btn");
+btn.addEventListener("click", function(){
+	var word = document.getElementById("theWord").value;
+	sessionStorage.setItem("word",word);
+	window.close();
+	window.open("hangmanPage.html");
+})
+
+document.getElementById("results").innerHTML = "Player 1 scores: "+playerOneScores+"<br>"+ 
+"Player 2 scores: "+playerTwoScores+"<br>"+"Level:"+ level;
+</script>
+</body>
+</html>

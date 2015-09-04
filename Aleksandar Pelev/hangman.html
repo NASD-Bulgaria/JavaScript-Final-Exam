@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"> 
+    <title>hangman</title>
+</head>
+<body>
+
+
+<div id="mainContainer">
+
+<img src='choveche.png' alt='HANGMAN'>
+<div>
+    <input id='wordToGuess' type='password' placeholder='type word to guess here'><br>
+    <button onclick='startGame()'> Start Game</button>
+    <button><a href='rules.html' target='_blank'>Rules</a> </button>
+</div>
+
+</div>
+
+
+</body>
+<script src="jquery-2.1.4.min.js"></script>
+<script>
+    round = 1;
+    avanta = 1;
+    hasWon = false;
+    wins = 0;
+    menu = "<img src='choveche.png' alt='HANGMAN'>";
+    menu+= "<div>";
+    menu+= "<input id='wordToGuess' type='password' placeholder='type word to guess here'><br>"
+    menu +="<button onclick='startGame()'> Start Game</button>";
+    menu +="<button><a href='rules.html' target='_blank'>Rules</a> </button>";
+    menu +="</div>";
+
+    function reset(){
+
+        if (round == 4 && wins>1) {
+            document.write("PLAYER 2 HAS WON " + wins + "ROUNDS. PLAYER 2 WINS THE GAME");
+        }
+        else if (round == 4 && wins<2) {
+
+            document.write("PLAYER 2 HAS WON ONLY " + wins + "ROUNDS. PLAYER 1 WINS THE GAME");
+        }
+        else {
+
+            document.getElementById('mainContainer').innerHTML = menu;
+            console.log(round);
+            if (round == 2) {
+                if (hasWon) {
+                    avanta = 2;
+                }
+                else {
+                    avanta = 1;
+                }
+
+            }
+            if (round == 3) {
+                if (hasWon) {
+                    avanta = 3;
+                }
+                else {
+                    avanta = 2;
+                }
+
+            }
+        }
+
+    }
+    function startGame() {
+        wordToSend = document.getElementById("wordToGuess").value;
+        console.log(wordToSend);
+        var cont = document.getElementById("mainContainer");
+        cont.innerHTML = "";
+        cont.innerHTML = "round " + round;
+        cont.innerHTML += "<canvas id='canvas' width='200px' height='200px'></canvas><br>";
+        cont.innerHTML += "<span id='errors'></span><br>";
+        cont.innerHTML += "<span id='word' style='font-size: 5em; letter-spacing: 10px;'></span>";
+        cont.innerHTML += "<div id='buttons'></div>";
+
+        defineVARS();
+        game();
+
+
+    }
+    function defineVARS() {
+        canvas = document.getElementById("canvas");
+        context = canvas.getContext("2d");
+        word = wordToSend.toLowerCase();
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        container = document.getElementById("word");
+        lives = 0;
+        allLetters = word.length;
+        guessedLetters = 0;
+        errors = "";
+    }
+    function checkLetter(letter, id) {
+        console.log(letter);
+        var placeholders = container.innerHTML.split('');
+        var indLetters = word.split('');
+        var match = false;
+        var butToChange = document.getElementById(id);
+        for (var i = 0; i < placeholders.length; i++) {
+            if (letter.toLowerCase() == indLetters[i]) {
+                match = true;
+                placeholders[i] = letter;
+                guessedLetters++;
+            }
+            if (match == true) {
+
+                butToChange.style.backgroundColor = "green";
+                butToChange.setAttribute("onclick", "");
+                container.innerHTML = placeholders.join('');
+            }
+
+        }
+
+        if (match == false) {
+            butToChange.style.backgroundColor = "red";
+            butToChange.setAttribute("onclick", "");
+            container.innerHTML = placeholders.join('');
+            if (avanta >0) {
+                avanta--;
+            } else {
+                drawHangman(lives);
+                lives++;
+            }
+
+            errors += letter + ",";
+            $("#errors").text(errors);
+            if (lives == 4) {
+                $("#mainContainer").append("Player 1 wins this round");
+                var but = $("<button></button>").text("Next Level");
+                but.attr("onclick", "reset()");
+                $("#mainContainer").append(but);
+                $("#buttons").hide();
+                hasWon = false;
+                round++;
+            }
+        }
+        console.log(guessedLetters);
+        if (guessedLetters == allLetters) {
+            $("#mainContainer").append("Player 2 wins this round. " + "The word is " + word.toUpperCase());
+            var but = $("<button></button>").text("Next Level");
+            but.attr("onclick", "reset()");
+            $("#mainContainer").append(but);
+            $("#buttons").hide();
+            hasWon = true;
+            wins++;
+            round++;
+
+        }
+
+    }
+    function game() {
+
+
+        //glob vars
+
+        for (var i = 0; i < letters.length; i++) {
+            var but = $("<button></button>").text(letters[i]);
+            but.attr("value", letters[i]);
+            but.attr("id", letters[i]);
+            if (letters[i].toLowerCase()== word[0].toLowerCase() || letters[i].toLowerCase() == word[word.length-1].toLowerCase()) {
+                but.attr("style","color:green");
+            }
+            else {
+            but.attr("onclick", "checkLetter(this.value,this.id)");
+            }
+            $("#buttons").append(but);
+        }
+
+        drawWord();
+    }
+    function drawWord() {
+        container.innerHTML += word[0].toUpperCase();
+        guessedLetters++;
+        for (var i = 1; i < word.length - 1; i++) {
+            if (word[i] == word[0]) {
+                container.innerHTML += word[0].toUpperCase();
+                guessedLetters++;
+            }
+            else if (word[i] == word[word.length - 1]) {
+                container.innerHTML += word[word.length - 1].toUpperCase();
+                guessedLetters++;
+            }
+            else {
+                container.innerHTML += "_";
+            }
+        }
+        container.innerHTML += word[word.length - 1].toUpperCase();
+        guessedLetters++;
+
+
+        context.beginPath();
+        context.moveTo(175, 200);
+        context.lineTo(175, 25);
+        context.lineTo(100, 25);
+        context.strokeStyle = "black";
+        context.moveTo(100, 25);
+        context.lineTo(100, 45);
+        context.stroke();
+
+    }
+    function drawHangman(number) {
+        var head = function () {
+            context.beginPath();
+            context.arc(100, 70, 30, 0, 2 * Math.PI, false);
+            context.fillStyle = "bisque";
+            context.fill();
+        };
+        var body = function () {
+            context.beginPath();
+            context.moveTo(100, 100);
+            context.lineTo(100, 160);
+            context.strokeStyle = "blue";
+            context.stroke();
+        };
+        var hands = function () {
+            context.beginPath();
+            context.strokeStyle = "green";
+            context.moveTo(100, 120);
+            context.lineTo(80, 130);
+            context.stroke();
+            context.moveTo(100, 120);
+            context.lineTo(120, 130);
+            context.stroke();
+        };
+        var legs = function () {
+            context.beginPath();
+            context.moveTo(100, 160);
+            context.lineTo(80, 200);
+            context.stroke();
+            context.moveTo(100, 160);
+            context.lineTo(120, 200);
+            context.stroke();
+        };
+        var array = [head, body, hands, legs];
+        array[number]();
+    }
+
+
+
+
+</script>
+</html>

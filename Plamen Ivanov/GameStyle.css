@@ -1,0 +1,70 @@
+@charset "UTF-8";
+h4{
+    color: purple;
+}
+#mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+.no-js #loading, .js #warning {
+    display: none;
+}
+#warning, #loading {
+    font-size: 150%;
+    font-weight: bold;
+    color: #f00;
+    text-align: center;
+}
+
+#play, #clear {
+    display: none;
+    width: 140px;
+    padding: 0.25em 0;
+    text-align: center;
+    margin: 0.2em 0 0 13px;
+    font-size: 112.5%;
+    cursor: pointer;
+    color: #fff;
+    background-color: #069;
+}
+#stage {
+    float: right;
+}
+#word {
+    font-weight: bold;
+    font-size: 150%;
+    letter-spacing: 0.25em;
+    margin: 0.25em 0 0.4em 30px;
+}
+
+#incorrect{
+    float:right;
+}
+
+#wrongInput {
+    height: 100px;
+    width: 400px;
+    margin: 0 5px 5px 0;
+    padding: 0.25em 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 150%;
+    color: #fff;
+    background-color: deeppink;
+    float: right;
+}
+#letters div {
+    width: 40px;
+    margin: 0 5px 5px 0;
+    padding: 0.25em 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 150%;
+    color: #fff;
+    background-color: #006;
+    float: left;
+}

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="UTF-8">
+	<title>Hangman</title>
+	<script src="jquery-1.11.3.js"></script>
+  	<script src="jquery-2.1.4.js"></script>
+<style>
+body{
+	background-color: silver;
+}
+#head{
+	text-align: center;
+}
+img{
+	height: 150px;
+	width: 150px;
+}
+#body{
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  color:black;
+  height:100%;
+  text-align:center;
+  font-size:18px;
+}
+canvas{
+  color:white;
+  border: white dashed 2px;
+  padding:15px;
+}
+h1, h2, h3 {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 100;
+	text-transform: uppercase;
+   margin:5px 0;
+}
+h1 {
+	text-align: center;
+	font-size: 2.6em;
+}
+h2 {
+	font-size: 1.6em;
+}
+p{
+  font-size: 1.6em;
+}
+#alphabet {
+  margin:15px auto;
+  padding:0;
+  max-width:900px;
+}
+#alphabet li {
+  float:left;
+  margin: 0 10px 10px 0;
+  list-style:none;
+  width:35px;
+  height:30px;
+  padding-top:10px;
+  background:$white;
+  color:orange;
+  cursor:pointer;
+  border: solid 1px $white;
+ }  
+    #alphabet li:hover{
+      color:white;
+    }
+#my-word {
+  margin: 0;
+  display: block;
+  padding: 0;
+  display:block;
+}
+#my-word li {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  display: inline-block;
+  padding: 0 10px;
+  font-size:1.6em;
+}
+.active {
+  background-color: green;
+  cursor:default;
+}
+.wrong{
+	background-color:red;
+}
+#mylives{
+  font-size:1.6em;
+  text-align:center;
+  display:block;
+}
+button{
+  color:black;
+  border: solid 1px white;
+  text-decoration:none;
+  cursor:pointer;
+  font-size:1.2em;
+  padding:10px 10px;
+  width:100px;
+  margin: 10px;
+  outline: none;
+} 
+    button:hover{
+      background:black;
+      border: solid 1px white;
+      color:white;
+    }
+#hold{
+  text-align: center;
+  padding-top: 100px;
+}
+#results{
+	display: absolute;
+	margin-left: 10%;
+	font-size: 20px;
+	color:purple;
+}
+#leg{
+	text-align: center;
+	font-size: 35px;
+	color:purple;
+}
+</style>
+<body>
+	<div id="results">
+		Current Game:<span id="currentGame">1</span><br>
+		Player1:<span id="player1"></span><br>
+		Player2:<span id="player2"></span>
+	</div>
+<div id="body">
+	<div class="wrapper">
+	    <div id="buttons"></div>  
+	    <div id="hold"></div>
+	    <p id="mylives"></p>
+	     <canvas style="background-color: red" id="stickman">error</canvas>
+	</div>
+</div>
+<div id="leg"></div>
+<script>
+
+window.onload = function () {
+	$("#body").fadeOut(1);
+	$("#leg").fadeOut(1);
+}
+var wordy = null;
+var words = [""];
+
+document.write("<h1>Hangman</h1><br>");
+document.write("<div id=\"head\"><img src=\"lambda.jpg\"><br>");
+  document.write("<button id=\"log\">Rules</button>"); 
+  document.write("<button id=\"start\">Start</button><br>");	
+  document.write("<input id=\"word\" type=\"password\"></div>");
+
+
+$("#log").click(function(){
+	var questlog = window.open("", "MsgWindow", "width=600, height=200");
+	questlog.document.write("<h1>Правила</h1><br>1.Първия играч въвежда дума в полето и се натиска бутон СТАРТ,за да започне играта.<br>2.Втория играч трябва да познае думата изписана от първия играч, при грешка той ще бъде наказван с лекичко бесене.<br>3.Ако втория играч познае буква, те ще се изпише.");
+});
+
+$("#start").click(function(){
+var word = $("#word").val();
+wordy = word;
+for(var i=0;i<words.length;i++){
+	if(words[i] == wordy){
+		alert("Use your brain a little and type another word.");
+		return;
+	}
+}
+ 
+words.push(wordy);
+$("#head").fadeOut("fast");
+$("#body").fadeIn("fast");
+start();
+
+});
+
+var player1 = "Player 1";
+var player2 = "Player 2";
+var player1score = 0;
+var player2score = 0;
+var currentPlayerLives = 0;
+var currentPlayer = 0;
+var currentGame  = 1;
+var lives ;             // Lives
+
+
+function start() {
+
+  var alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+        't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
+  var categories;         // Array of topics
+  var chosenCategory;     // Selected catagory
+  var word ;              // Selected word
+  var guess ;             // Geuss
+  var geusses = [ ];      // Stored geusses  
+  var counter ;           // Count correct geusses
+  var space;              // Number of spaces in word '-'
+  // Get elements
+  var showLives = document.getElementById("mylives");
+  var showCatagory = document.getElementById("scatagory");
+ // create alphabet ul
+  var buttons = function () {
+    myButtons = document.getElementById('buttons');
+    letters = document.createElement('ul');
+
+    for (var i = 0; i < alphabet.length; i++) {
+      letters.id = 'alphabet';
+      list = document.createElement('li');
+      list.id = 'letter';
+      list.innerHTML = alphabet[i];
+      check();
+      myButtons.appendChild(letters);
+      letters.appendChild(list);
+    }
+  }
+  // Create geusses ul
+   result = function () {
+    wordHolder = document.getElementById('hold');
+    correct = document.createElement('ul');
+
+    for (var i = 0; i < word.length; i++) {
+      correct.setAttribute('id', 'my-word');
+      guess = document.createElement('li');
+      guess.setAttribute('class', 'guess');
+      if (word[i] === "-") {
+        guess.innerHTML = "-";
+        space = 1;
+      } 
+      else if(i == 0){
+        	var res = word.slice(0,1);
+        	guess.innerHTML = res;
+		}
+	else if(i == word.length-1){
+        	var res = word.slice(word.length-1,word.length);
+        	guess.innerHTML = res;
+		}
+      else {
+        guess.innerHTML = "_";
+      }
+      geusses.push(guess);
+      wordHolder.appendChild(correct);
+      correct.appendChild(guess);
+    }
+  }  
+  // Show lives
+   comments = function () {
+    showLives.innerHTML = "You have " + lives + " lives";
+    if (lives < 1) {
+      showLives.innerHTML = "Game Over";
+      currentPlayerLives--;
+      var player = "Player 1";
+      restart(player);
+    }
+    for (var i = 0; i < geusses.length; i++) {
+      if (counter + space === geusses.length-2) {
+        showLives.innerHTML = "You Win!";
+        currentPlayerLives++;
+        var player = "Player 2";
+        restart(player);
+        return;
+      }
+    }
+  }
+
+      // Animate man
+  var animate = function () {
+    var drawMe = lives ;
+    	var color = "black";
+    	drawArray[drawMe](color);  
+  }
+   // Hangman
+   function drawNew(){
+   	     for(var i = 0;i<6;i++){
+	         	var color = "white";
+				drawArray[i](color);
+ 		 }
+   }
+  canvas =  function(){
+
+    myStickman = document.getElementById("stickman");
+    context = myStickman.getContext('2d');
+    context.beginPath();
+    context.strokeStyle = "#fff";
+    context.lineWidth = 2;
+         drawNew();
+  };
+  
+    head = function($color){
+      myStickman = document.getElementById("stickman");
+      context = myStickman.getContext('2d');
+      context.beginPath();
+      context.arc(60, 25, 10, 0, Math.PI*2, true);
+      context.strokeStyle = $color;
+      context.stroke();
+    }
+    
+  draw = function($pathFromx, $pathFromy, $pathTox, $pathToy, $color) {
+    
+    context.moveTo($pathFromx, $pathFromy);
+    context.lineTo($pathTox, $pathToy);
+    context.strokeStyle = $color;
+    context.stroke(); 
+}
+
+   frame1 = function(color) {
+     draw (0, 150, 150, 150,color);
+   };
+   
+   frame2 = function(color) {
+     draw (10, 0, 10, 600,color);
+   };
+  
+   frame3 = function(color) {
+     draw (0, 5, 70, 5,color);
+   };
+  
+   frame4 = function(color) {
+     draw (60, 5, 60, 15,color);
+   };
+  
+   torso = function(color) {
+     draw (60, 36, 60, 70,color);
+   };
+  
+   rightArm = function(color) {
+     draw (60, 46, 100, 50,color);
+   };
+  
+   leftArm = function(color) {
+     draw (60, 46, 20, 50,color);
+   };
+  
+   rightLeg = function(color) {
+     draw (60, 70, 100, 100,color);
+   };
+  
+   leftLeg = function(color) {
+     draw (60, 70, 20, 100,color);
+   };
+   drawArray = [rightLeg, leftLeg, rightArm, leftArm,  torso,  head, frame4, frame3, frame2, frame1]; 
+
+  // OnClick Function
+   check = function () {
+    list.onclick = function () {
+      var geuss = (this.innerHTML);
+      this.setAttribute("class", "wrong");
+      this.onclick = null;
+      for (var i = 1; i < word.length-1; i++) {
+        if (word[i] === geuss) {
+          geusses[i].innerHTML = geuss;
+          counter += 1;
+          this.setAttribute("class", "active");
+        } 
+      }
+      var j = (word.indexOf(geuss));
+    
+      if (j === -1) {
+        lives -= 1;
+        comments();
+        animate();
+      } else {
+        comments();
+      }
+    }
+  }  
+  // Play
+  play = function (wordy) {
+  	if(wordy !=null){
+  		word = wordy;
+  	}
+  	else{
+	    alert("Напишете дума в предния прозорец(прочетете правилата ако не разбирате нещо).")
+	}
+    word = word.replace(/\s/g, "-");
+    console.log(word);
+    buttons();
+    geusses = [ ];
+    lives = 10 + currentPlayerLives;
+    counter = 0;
+    space = 0;
+    result();
+    comments();
+    canvas();
+  }
+  play(wordy); 
+   //Restart curren game and go to next level
+  function restart(player){
+  	if(player == "Player 1"){
+  		player1score++;
+  		$("#player1").text(player1score);
+  	}
+  	else{
+  		player2score++;
+  		$("#player2").text(player2score);
+  	}
+  	if(player1score ==3){
+  		document.write("<h1 style=\"color:green; background-color:silver; text-align:center\">The Winer is Player 1!<br>With:"+player1score+"very hard words(or very weak friend)</h1>");
+  	}
+  	if(player2score ==3){
+		document.write("<h1 style=\"color:green; background-color:silver; text-align:center\">The Winer is Player 2!<br>With:"+player2score+"correct word, Well done noob</h1>");
+  	}
+  	currentGame++;
+  	$("#currentGame").text(currentGame);
+  	$("#body").fadeOut("slow");
+  	  $("#hold").text("");
+  	  $("#buttons").text("");
+	$("#mylives").text("");
+  	$("#leg").text("The Winer is:"+player+"!!! Click here for next game")
+  	$("#leg").fadeIn("slow");
+  	$("#leg").click(function(){
+  		$("#leg").fadeOut("slow");
+  		$("#head").fadeIn("slow");
+  	});
+  }
+}
+</script>
+</body>
+</html>

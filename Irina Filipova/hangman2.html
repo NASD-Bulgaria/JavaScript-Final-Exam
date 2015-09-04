@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hangman 2</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body id="body1">
+    <canvas id="canvas" width="300px" height="300px"></canvas><br>
+	<span id= "usedLetters" style="color:white"></span><br>
+    <span id="word" ></span><br>
+    <br>
+	<div id="buttons"></div>
+	
+
+    <script src="jquery-2.1.4.min.js"></script>
+    <script>
+    
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        var category = localStorage.getItem('word').toLowerCase();
+
+        function categoryAnimal(){
+            var animals= ["DOG","BIRD","TURTTLE", "SNAKE"];
+            return animals[parseInt(Math.random()*animals.length)]  ;
+        }
+        function categoryCountry(){
+            var country= ["SPAIN","ITALY","BULGARIA","FRANCE"];
+            return country[parseInt(Math.random()*country.length)];
+        }
+        function categoryColors(){
+            var colors= ["ORANGE","BLUE","BULGARIA","FRANCE"];
+            return colors[parseInt(Math.random()*colors.length)];
+        }
+
+		if(category == "animals"){
+            word = categoryAnimal();
+        }
+        if(category == "country"){
+            word = categoryCountry();
+        }
+        if(category == "colors"){
+            word = categoryColors();
+        }
+
+
+		word = word.toUpperCase();
+        var letters = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+        var container = document.getElementById("word");
+        var lives = 0;
+        var allLetters = word.length;
+        var guessedLetters = 0;
+		var gallowscolor = "#FFCC00";
+		var color = "#FFCC00";
+        var bodycenterx = 70;
+		playerWin = false;
+		localStorage.setItem('playerWin',playerWin);
+		
+		var player1Wins = parseInt(localStorage.getItem('player1Wins'));
+		var player2Wins = parseInt(localStorage.getItem('player2Wins'));
+		
+
+        for (var i=0;i<letters.length;i++) {
+            var but = $("<button></button>").text(letters[i]);
+            but.attr("value",letters[i]);
+            but.attr("id",letters[i]);
+			but.attr("class","blue");
+            but.attr("onclick", "checkLetter(this.value,this.id)");
+            $("#buttons").append(but);
+        }
+
+
+        function checkLetter(letter,id) {
+            //$("#usedLetters").append(letter);
+            var placeholders = container.innerHTML.split('');
+            var indLetters = word.split('');
+            var match = false;
+            var selectedButton = document.getElementById(id);
+		
+            for (var i=1;i<placeholders.length-1;i++) {
+                if (letter.toUpperCase() == indLetters[i]) {
+                    match = true;
+                    placeholders[i] = letter;
+                    guessedLetters++;
+                }
+                if (match == true) {
+
+                    selectedButton.style.backgroundColor = "#15FF0A";//green
+                    selectedButton.setAttribute("onclick","");
+                    container.innerHTML = placeholders.join('');//convert the container to a string and display it again
+
+                }
+
+            }
+
+            if(match == false) {
+                $("#usedLetters").append(letter);
+                selectedButton.style.backgroundColor = "red";
+                selectedButton.setAttribute("onclick","");
+                container.innerHTML = placeholders.join('');
+                drawHangman(lives);
+                lives++;
+                if(lives==4) {
+					alert("Loser!");
+					playerWin = false;
+					localStorage.setItem('playerWin', playerWin);
+					player1Wins++;
+					location.replace("hangman1.html");
+				}
+            }
+            if (guessedLetters==(allLetters-2)) {
+					playerWin = true;
+					localStorage.setItem('playerWin', playerWin);
+					alert("You won!");	
+					player2Wins++;//2iq igra4 otgatva, zatova pe4eli toi
+					
+					location.replace("hangman1.html");
+            }
+        }
+		localStorage.setItem('playerWin', playerWin);
+		localStorage.setItem('player1Wins',player1Wins);
+		localStorage.setItem('player2Wins',player2Wins);
+
+		
+
+		//draw the  "--" the secret w
+        function drawWord () {
+			container.innerHTML = word[0];
+            for (var i=1;i<word.length-1;i++) {
+                container.innerHTML += "_";
+            }			
+			container.innerHTML += word[word.length-1];
+			
+            context.lineWidth = 7;
+            context.strokeStyle = gallowscolor;
+			context.beginPath();
+            context.moveTo(2,180);
+            context.lineTo(40,180);
+            context.moveTo(20,180);
+            context.lineTo(20,40);
+            context.moveTo(2,40);
+            context.lineTo(100,40);
+			context.moveTo(70,40);
+            context.lineTo(70,65);
+            context.stroke();
+            context.closePath();
+			
+
+        }
+
+        function drawHangman(number) {
+            var head = function () {
+				context.beginPath();
+				context.setLineDash([2]);
+				context.lineWidth = 5;
+				context.strokeStyle = color;
+                
+                context.arc (bodycenterx,80,15,0,Math.PI*2,false);
+                context.stroke();
+				context.closePath();
+				context.restore();
+            };
+            var body = function () {
+                context.strokeStyle = color;
+	            context.beginPath();
+	            context.moveTo(bodycenterx,95);
+	            context.lineTo(bodycenterx,125);
+	            context.stroke();
+	            context.closePath();
+            };
+            var hands = function() {
+                context.beginPath();
+                context.moveTo(bodycenterx,100);
+				context.lineTo(bodycenterx-20,110);
+                context.stroke();
+                context.moveTo(bodycenterx,100);
+				context.lineTo(bodycenterx+20,110);
+                context.stroke();
+            };
+            var legs = function() {
+                context.beginPath();
+				context.moveTo(bodycenterx,125);
+				context.lineTo(bodycenterx-10,155);
+                context.stroke();
+                
+                context.moveTo(bodycenterx,125);
+				context.lineTo(bodycenterx+10,155);
+                context.stroke();
+            };
+            var array = [head,body,hands,legs];
+            array[number]();
+        }
+
+
+
+        drawWord();
+
+
+    </script>
+
+
+</body>
+</html>

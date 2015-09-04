@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hangman1</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<p>
+		<button id="btn2" class ="btn">RULES</button >
+		<button id="btn1" class ="btn">NEW GAME</button >
+		<p>Word <input id="input"  value="" />
+			<p>Select category:
+				<ul style = "color:white">
+					<li>Animals</li>
+					<li>Country	</li>
+					<li>Colors</li>
+				</ul>
+			</p>
+		<br>
+		<img src ="play.jpeg" >
+		<p id = "result"></p>
+	
+	<script> 
+		var currentLevel = 1;
+		var bonusErrors = 1;
+		var word ;
+		player1Wins = 0;
+		player2Wins = 0;
+		playerWin = false;
+		console.log("22R playerWin "+localStorage.getItem('playerWin'));
+		if (localStorage.getItem('playerWin') === null) {
+		}else{
+			var playerWin = localStorage.getItem('playerWin');
+		}
+		if (localStorage.getItem('player1Wins') === null) {
+		}else{
+			player1Wins = localStorage.getItem('player1Wins');
+		}
+		if (localStorage.getItem('player2Wins') === null) {
+		}else{
+			player2Wins = localStorage.getItem('player2Wins');
+			currentLevel = parseInt(player2Wins) + parseInt(player1Wins)+1;
+		}
+		
+			console.log(playerWin + " sadgfdhfhfhfghcg");
+			console.log(player2Wins);
+			if(localStorage.getItem('playerWin') !== null){
+				if(playerWin == "true"){
+					currentLevel = parseInt(currentLevel) + 1;
+					console.log (typeof "currentLevel");
+					console.log("currentLevel= "+currentLevel);
+					bonusErrors = parseInt(currentLevel);
+					console.log(player2Wins + "second time");
+					player2Wins++;
+					console.log(player2Wins + "third time");
+					
+				}
+				else{
+					// player1Wins win
+					currentLevel = parseInt(currentLevel) + 1;
+					bonusErrors = parseInt(currentLevel)-1;
+					player1Wins = parseInt(player1Wins) + 1;
+				}
+				showResult();
+			}
+			
+		if(currentLevel >= 4 || player2Wins>=2 || player1Wins>=2){
+				if ( player2Wins>=2) {
+				 document.write("Player 2 has won " + player2Wins + " games");
+				 
+				}
+				else if(player1Wins>=2) {
+				 document.write("Player 1 has won " + player1Wins + " games");
+				 
+				}
+				//game over
+				currentLevel = 1;
+				player1Wins = 0;
+				player2Wins = 0;
+				bonusErrors = 1;
+				playerWin = false;
+				clearBrows();
+
+				//natrupvane na rezultati
+				localStorage.setItem('word', "");
+				localStorage.setItem('playerWin', playerWin);
+				localStorage.setItem('player1Wins',0);
+				localStorage.setItem('player2Wins',0);
+				localStorage.setItem('bonusErrors',bonusErrors);
+				localStorage.setItem('currentLevel',currentLevel);
+				showResult();
+			}
+			
+		function showResult(){
+			document.getElementById("result").innerHTML = "player1Wins = "+ player1Wins + "<br> player2Wins= " + player2Wins + "; <br>bonusErrors = " + 
+		bonusErrors + "<br> currentLevel=  " + currentLevel + "<br> playerWin = " + playerWin;
+		}
+		function clearBrows(){
+			clear = false;
+			localStorage.clear();
+		}
+		
+		showResult();	
+		document.getElementById("btn1").addEventListener("click", function(){
+		
+		if (document.getElementById("input").value!=''){ //ako ne vuvedem duma v poleto word, polzvame dumata po podrazbirane irina
+			word = document.getElementById("input").value;
+		}
+
+		 localStorage.setItem('word', word);
+		 localStorage.setItem('player1Wins',player1Wins);
+		 localStorage.setItem('player2Wins',player2Wins);
+		 location.replace("hangman2.html");
+		 
+		});
+		document.getElementById("btn2").addEventListener("click", function(){
+		window.open("rules.html")
+		});
+	</script> 
+
+	</body>
+</html>

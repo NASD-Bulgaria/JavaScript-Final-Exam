@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+</head>
+<body>
+<canvas style="border: solid 1px black; position: relative" id="drawing" width="300" height="300"></canvas>
+<script src="Start.js" ></script>
+<script src="hangman.js"></script>
+<button onclick="startGame()">START</button>
+<button onclick="rules()">RULES</button>
+<div><p id="p1score">Payer 1 Score =</p>
+    <p id="p2score">Payer 2 Score =</p></div>
+<div><input type="radio" id="radio1" value="0" onchange="changeCategory()" checked="checked">Computers
+    <input type="radio" id="radio2" value="1" onchange="changeCategory()" >Cars
+    <input type="radio" id="radio3" value="2" onchange="changeCategory()">Teams</div>
+
+</body>
+</html>
